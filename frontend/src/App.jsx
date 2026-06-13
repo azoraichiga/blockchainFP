@@ -3,7 +3,7 @@ import ConnectWallet from "./components/ConnectWallet";
 import RewardCard from "./components/RewardCard";
 
 export default function App() {
-  const { account, rewardAmount, claimed, wrongNetwork, connect } = useContract();
+  const { account, rewardAmount, claimed, wrongNetwork, loadingRead, connect } = useContract();
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8">
       <div className="mx-auto max-w-2xl">
@@ -35,7 +35,7 @@ export default function App() {
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            <RewardCard rewardAmount={rewardAmount} claimed={claimed} />
+            <RewardCard loading={loadingRead} rewardAmount={rewardAmount} claimed={claimed} />
           </div>
         )}
       </div>

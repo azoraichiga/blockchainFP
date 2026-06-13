@@ -6,14 +6,22 @@ export function useContract() {
   const [rewardAmount, setRewardAmount] = useState(0);
   const [claimed, setClaimed] = useState(false);
   const [wrongNetwork, setWrongNetwork] = useState(false);
+  const [loadingRead, setLoadingRead] = useState(false);
   const [error, setError] = useState(null);
 
   // ---- READ OPERATIONS (2) ----
   const readData = useCallback(async () => {
+    setLoadingRead(true);
     setError(null);
-    await sleep(300); // TODO(Web3): ganti dengan contract.getRewardAmount + hasClaimed
-    setRewardAmount(MOCK_STATE.rewardAmount);
-    setClaimed(MOCK_STATE.claimed);
+    try {
+      await sleep(900); // TODO(Web3): ganti dengan contract.getRewardAmount + hasClaimed
+      setRewardAmount(MOCK_STATE.rewardAmount);
+      setClaimed(MOCK_STATE.claimed);
+    } catch (e) {
+      setError("Gagal membaca data dari blockchain.");
+    } finally {
+      setLoadingRead(false);
+    }
   }, []);
 
   const connect = useCallback(async () => {
@@ -23,5 +31,5 @@ export function useContract() {
     await readData();
   }, [readData]);
 
-  return { account, rewardAmount, claimed, wrongNetwork, error, connect };
+  return { account, rewardAmount, claimed, wrongNetwork, loadingRead, error, connect };
 }
