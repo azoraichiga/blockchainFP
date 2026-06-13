@@ -1,8 +1,9 @@
 import { useContract } from "./hooks/useContract";
 import ConnectWallet from "./components/ConnectWallet";
+import RewardCard from "./components/RewardCard";
 
 export default function App() {
-  const { account, wrongNetwork, connect } = useContract();
+  const { account, rewardAmount, claimed, wrongNetwork, connect } = useContract();
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8">
       <div className="mx-auto max-w-2xl">
@@ -26,11 +27,15 @@ export default function App() {
           </div>
         )}
 
-        {!account && (
+        {!account ? (
           <div className="rounded-xl border border-slate-200 bg-white py-12 text-center">
             <svg className="mx-auto h-8 w-8 text-slate-300" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 12V7H5a2 2 0 0 1 0-4h14v4M3 5v14a2 2 0 0 0 2 2h16v-5M18 12a2 2 0 0 0 0 4h4v-4h-4z"/></svg>
             <p className="mt-3 text-[15px] font-medium text-slate-900">Hubungkan dompet untuk mulai</p>
             <p className="mt-1 text-sm text-slate-500">Connect MetaMask untuk melihat dan klaim reward kamu.</p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4">
+            <RewardCard rewardAmount={rewardAmount} claimed={claimed} />
           </div>
         )}
       </div>
