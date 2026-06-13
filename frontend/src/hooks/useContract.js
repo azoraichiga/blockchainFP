@@ -31,11 +31,12 @@ export function useContract() {
     setTxStatus("pending");
     try {
       await sleep(1600); // TODO(Web3): contract.claimReward() lalu tx.wait()
+      if (Math.random() < 0.12) throw { code: 4001 }; // simulasi user reject
       setClaimed(true);
       setTxStatus("success");
     } catch (e) {
       setTxStatus("failed");
-      setError("Transaksi gagal. Coba lagi.");
+      setError("Transaksi ditolak di MetaMask. Coba lagi.");
     }
   }, []);
 
