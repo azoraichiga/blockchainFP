@@ -4,6 +4,7 @@ export const MOCK_STATE = {
   rewardAmount: 250,
   claimed: false,
   wrongNetwork: false,
+  isAdmin: true,
 };
 
 export const MOCK_HISTORY = [

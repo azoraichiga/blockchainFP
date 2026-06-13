@@ -5,11 +5,13 @@ let toastId = 0;
 
 export function useContract() {
   const [account, setAccount] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [rewardAmount, setRewardAmount] = useState(0);
   const [claimed, setClaimed] = useState(false);
   const [wrongNetwork, setWrongNetwork] = useState(false);
   const [loadingRead, setLoadingRead] = useState(false);
   const [txStatus, setTxStatus] = useState("idle");
+  const [grantStatus, setGrantStatus] = useState("idle");
   const [history, setHistory] = useState([]);
   const [toasts, setToasts] = useState([]);
 
@@ -60,8 +62,25 @@ export function useContract() {
     setError(null);
     setAccount(MOCK_ADDRESS);
     setWrongNetwork(MOCK_STATE.wrongNetwork);
+    setIsAdmin(MOCK_STATE.isAdmin);
     await readData();
   }, [readData]);
+
+  // ---- WRITE #2: GRANT REWARD (dosen) ----
+  const grantReward = useCallback(async (studentAddr, amount) => {
+    setError(null);
+    setGrantStatus("pending");
+    try {
+      await sleep(1500); // TODO(Web3): contract.grantReward(addr, amount) onlyOwner
+      setGrantStatus("success");
+      addHistory({ type: "Reward granted", amount: Number(amount), by: "Dosen", time: "baru saja" });
+      pushToast(`Memberi ${amount} CRT ke ${studentAddr.slice(0, 6)}…`, "success");
+      setTimeout(() => setGrantStatus("idle"), 2500);
+    } catch (e) {
+      setGrantStatus("failed");
+      setError("Gagal memberi reward. Pastikan kamu admin & input benar.");
+    }
+  }, [addHistory, pushToast]);
 
   // ---- EVENT LISTENING (real-time) ----
   // TODO(Web3): ganti dengan contract.on("RewardGranted"/"RewardClaimed", ...)
@@ -76,5 +95,5 @@ export function useContract() {
     return () => clearTimeout(t);
   }, [account, addHistory, pushToast]);
 
-  return { account, rewardAmount, claimed, wrongNetwork, loadingRead, txStatus, error, history, toasts, connect, claim, dismissToast };
+  return { account, isAdmin, rewardAmount, claimed, wrongNetwork, loadingRead, txStatus, grantStatus, error, history, toasts, connect, claim, grantReward, dismissToast };
 }

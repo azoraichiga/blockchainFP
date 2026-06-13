@@ -3,10 +3,11 @@ import ConnectWallet from "./components/ConnectWallet";
 import RewardCard from "./components/RewardCard";
 import ClaimAction from "./components/ClaimAction";
 import RewardHistory from "./components/RewardHistory";
+import AdminPanel from "./components/AdminPanel";
 import Toast from "./components/Toast";
 
 export default function App() {
-  const { account, rewardAmount, claimed, wrongNetwork, loadingRead, txStatus, error, history, toasts, connect, claim, dismissToast } = useContract();
+  const { account, isAdmin, rewardAmount, claimed, wrongNetwork, loadingRead, txStatus, grantStatus, error, history, toasts, connect, claim, grantReward, dismissToast } = useContract();
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8">
       <div className="mx-auto max-w-2xl">
@@ -42,6 +43,7 @@ export default function App() {
             {!loadingRead && (
               <>
                 <ClaimAction claimed={claimed} txStatus={txStatus} error={error} onClaim={claim} />
+                {isAdmin && <AdminPanel grantStatus={grantStatus} onGrant={grantReward} />}
                 <RewardHistory history={history} />
               </>
             )}
