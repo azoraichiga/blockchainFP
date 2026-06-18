@@ -19,7 +19,7 @@ export default function RewardHistory({ history = [] }) {
                   {h.type}
                   <span className="ml-1.5 text-xs text-slate-400">· {h.by}</span>
                 </td>
-                <td className="py-2 text-sm text-slate-500">+{h.amount} CRT</td>
+                <td className="py-2 text-sm text-slate-500">+{h.amount} ETH</td>
                 <td className="py-2 text-right text-sm text-slate-400">{h.time}</td>
               </tr>
             ))}
