@@ -167,25 +167,30 @@ export function useContract() {
     }
   }, [addHistory, pushToast, account, readData]);
 
+  // Kontrak menyimpan saldo ETH-nya sendiri untuk membayar klaim
+  // (lihat claimReward -> payable transfer). Tanpa ini, semua klaim
+  // akan gagal dengan "Insufficient contract balance".
   const fundContract = useCallback(async (amountEth) => {
     setError(null);
     setFundStatus("pending");
     try {
-      await sleep(1400); // TODO(Web3): ganti dengan kontrak asli:
-      // const provider = new ethers.BrowserProvider(window.ethereum);
-      // const signer = await provider.getSigner();
-      // const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-      // const tx = await contract.fund({ value: ethers.parseEther(String(amountEth)) });
-      // await tx.wait();
-      setContractBalance((b) => b + Number(amountEth));
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+      // fund() adalah fungsi payable: ETH dikirim lewat { value: ... }.
+      const tx = await contract.fund({ value: ethers.parseEther(String(amountEth)) });
+      await tx.wait();
+
       setFundStatus("success");
       pushToast(`Kontrak ditambah dana ${amountEth} ETH`, "success");
       setTimeout(() => setFundStatus("idle"), 2500);
+
+      if (account) await readData(account);
     } catch (e) {
       setFundStatus("failed");
-      setError("Gagal menambah dana kontrak.");
+      setError(friendlyError(e));
     }
-  }, [pushToast]);
+  }, [pushToast, account, readData]);
 
   const ticked = useRef(false);
   useEffect(() => {
