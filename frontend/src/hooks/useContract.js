@@ -125,6 +125,7 @@ export function useContract() {
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
       const tx = await contract.claimReward();
+      pushToast("Transaksi dikirim, menunggu konfirmasi…", "info");
       await tx.wait();
 
       setHasClaimed(true);
@@ -149,6 +150,7 @@ export function useContract() {
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
       const amountWei = ethers.parseEther(String(amountEth));
       const tx = await contract.grantReward(studentAddr, amountWei);
+      pushToast("Transaksi dikirim, menunggu konfirmasi…", "info");
       await tx.wait(); // tunggu transaksi benar-benar masuk blok & terkonfirmasi
 
       setGrantStatus("success");
@@ -177,6 +179,7 @@ export function useContract() {
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
       // fund() adalah fungsi payable: ETH dikirim lewat { value: ... }.
       const tx = await contract.fund({ value: ethers.parseEther(String(amountEth)) });
+      pushToast("Transaksi dikirim, menunggu konfirmasi…", "info");
       await tx.wait();
 
       setFundStatus("success");
