@@ -136,26 +136,32 @@ export function useContract() {
     }
   }, [rewardAmount, addHistory, pushToast]);
 
+  // amount yang dikirim ke kontrak harus dalam WEI, bukan ETH biasa.
   const grantReward = useCallback(async (studentAddr, amountEth) => {
     setError(null);
     setGrantStatus("pending");
     try {
-      await sleep(1500); // TODO(Web3): ganti dengan kontrak asli:
-      // const provider = new ethers.BrowserProvider(window.ethereum);
-      // const signer = await provider.getSigner();
-      // const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-      // const amountWei = ethers.parseEther(String(amountEth));
-      // const tx = await contract.grantReward(studentAddr, amountWei);
-      // await tx.wait();
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+      const amountWei = ethers.parseEther(String(amountEth));
+      const tx = await contract.grantReward(studentAddr, amountWei);
+      await tx.wait(); // tunggu transaksi benar-benar masuk blok & terkonfirmasi
+
       setGrantStatus("success");
       addHistory({ type: "Reward granted", amount: Number(amountEth), by: "Dosen", time: "baru saja" });
       pushToast(`Memberi ${amountEth} ETH ke ${studentAddr.slice(0, 6)}…`, "success");
       setTimeout(() => setGrantStatus("idle"), 2500);
+
+      // Refresh data kalau yang diberi reward adalah akun yang sedang connect.
+      if (account && studentAddr.toLowerCase() === account.toLowerCase()) {
+        await readData(account);
+      }
     } catch (e) {
       setGrantStatus("failed");
-      setError("Gagal memberi reward. Pastikan kamu admin & input benar.");
+      setError(friendlyError(e));
     }
-  }, [addHistory, pushToast]);
+  }, [addHistory, pushToast, account, readData]);
 
   const fundContract = useCallback(async (amountEth) => {
     setError(null);
