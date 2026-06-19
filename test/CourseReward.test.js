@@ -205,6 +205,22 @@ describe("CourseReward", function () {
 
     });
 
+    it("tracks claimers count", async function () {
+
+    await contract.grantReward(
+        student1.address,
+        REWARD
+    );
+
+    await contract
+        .connect(student1)
+        .claimReward();
+
+    expect(
+        await contract.getClaimersCount()
+    ).to.equal(1);
+});
+
     // ==================================================
     // PAUSE CONTRACT
     // ==================================================
@@ -231,6 +247,79 @@ describe("CourseReward", function () {
         });
 
     });
+
+    // ==================================================
+    // DEADLINE
+    // ==================================================
+
+    describe("Deadline", function () {
+
+    it("owner can update deadline", async function () {
+
+        const oldDeadline =
+            await contract.claimDeadline();
+
+        await contract.setDeadline(60);
+
+        const newDeadline =
+            await contract.claimDeadline();
+
+        expect(newDeadline)
+            .to.be.gt(oldDeadline);
+    });
+
+    it("non-owner cannot update deadline", async function () {
+
+        await expect(
+            contract
+                .connect(student1)
+                .setDeadline(60)
+        ).to.be.reverted;
+    });
+
+});
+    // ==================================================
+    // FUND
+    // ==================================================
+
+describe("Fund", function () {
+
+    it("accepts ETH funding", async function () {
+
+        const before =
+            await contract.getBalance();
+
+        await contract
+            .connect(student1)
+            .fund({
+                value:
+                ethers.parseEther("1")
+            });
+
+        const after =
+            await contract.getBalance();
+
+        expect(after)
+            .to.equal(
+                before +
+                ethers.parseEther("1")
+            );
+    });
+
+    it("rejects zero ETH funding", async function () {
+
+        await expect(
+            contract
+                .connect(student1)
+                .fund({
+                    value: 0
+                })
+        ).to.be.revertedWith(
+            "Must send ETH to fund"
+        );
+    });
+
+});
 
     // ==================================================
     // WITHDRAW
