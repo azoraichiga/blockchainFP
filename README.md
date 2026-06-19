@@ -91,6 +91,12 @@ http://localhost:5173
 - Local: `0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6`
 - Testnet (opsional): *(Belum di-deploy)*
 
+## Live Demo
+
+🌐 **[https://blockchain-project3-kelompok7-afq5q9vnd-naomigwy.vercel.app](https://blockchain-project3-kelompok7-afq5q9vnd-naomigwy.vercel.app)**
+
+> **Catatan:** Tampilan frontend tersedia secara online. Untuk interaksi blockchain penuh, jalankan aplikasi secara lokal menggunakan panduan di atas.
+
 
 ## Screenshot
 
