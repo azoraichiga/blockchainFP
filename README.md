@@ -130,5 +130,3 @@ Aplikasi ini dilengkapi dengan penanganan *error* yang ramah pengguna untuk menc
 | Skenario Error | Deskripsi / Pesan Tampil | Contoh Tampilan Error |
 | -------------- | ------------------------ | --------------------- |
 | **Transaksi Dibatalkan** | Pengguna menekan tombol "Reject/Cancel" saat *popup* MetaMask meminta konfirmasi transaksi. Muncul pesan: *"Transaksi dibatalkan. Kamu menolak permintaan di MetaMask."* | ![Error Batal Transaksi](img/9-error-handling.png) |
-| **Saldo Kontrak Kosong** | Dosen memberikan *reward* tetapi lupa mengisi dana (*fund*) kontrak. Transaksi mahasiswa akan ditolak *smart contract*. | *(Opsional)* |
-| **Bukan Mahasiswa Terdaftar** | Mahasiswa mencoba klaim tanpa di-*whitelist* oleh dosen. | *(Opsional)* |
