@@ -3,6 +3,12 @@ import { ethers } from "ethers";
 import { CONTRACT_ADDRESS, CONTRACT_ABI, EXPECTED_CHAIN_ID } from "../utils/contract";
 import { friendlyError } from "../utils/helpers";
 
+// Provider langsung ke node — dipakai untuk READ (owner, getStudentInfo, dst)
+// sehingga tidak tergantung pada MetaMask dan tidak kena rate-limiting MetaMask.
+// MetaMask (BrowserProvider) tetap dipakai untuk WRITE (sign & send tx).
+const RPC_URL = "http://localhost:8545";
+const getReadProvider = () => new ethers.JsonRpcProvider(RPC_URL);
+
 let toastId = 0;
 
 /**
@@ -67,7 +73,9 @@ export function useContract() {
     setLoadingRead(true);
     setError(null);
     try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
+      // Gunakan JsonRpcProvider langsung (bukan MetaMask) supaya tidak kena
+      // rate-limiting MetaMask akibat eth_newFilter spam.
+      const provider = getReadProvider();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
       const [claimed, whitelisted, amount] = await contract.getStudentInfo(addr);
       const active = await contract.isActive();
@@ -107,13 +115,10 @@ export function useContract() {
       const net = await provider.getNetwork();
       setWrongNetwork(net.chainId !== EXPECTED_CHAIN_ID);
 
-      // Cek apakah akun yang connect adalah owner (dosen) kontrak.
-      // Dibungkus try-catch terpisah supaya kegagalan di sini tidak
-      // menghentikan readData() — admin check adalah nice-to-have,
-      // bukan syarat untuk menampilkan data mahasiswa.
+      // Cek owner langsung via JsonRpcProvider (bukan MetaMask) — lebih reliable.
       try {
-        const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
-        const ownerAddr = await contract.owner();
+        const readContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, getReadProvider());
+        const ownerAddr = await readContract.owner();
         setIsAdmin(ownerAddr.toLowerCase() === addr.toLowerCase());
       } catch (ownerErr) {
         console.warn("[useContract] owner() check failed, defaulting isAdmin=false:", ownerErr?.message);
@@ -222,8 +227,10 @@ export function useContract() {
   // termasuk owner() dan readData()).
   useEffect(() => {
     if (!account) return;
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    provider.pollingInterval = 4000; // kurangi eth_newFilter spam ke MetaMask
+    // Gunakan JsonRpcProvider untuk event listening — hindari MetaMask rate-limiting.
+    // pollingInterval diperbesar supaya tidak spam RPC.
+    const provider = getReadProvider();
+    provider.pollingInterval = 4000;
     const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
 
     const onGranted = (student, amount) => {
