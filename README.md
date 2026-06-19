@@ -93,7 +93,7 @@ http://localhost:5173
 
 ## Live Demo
 
-🌐 **[https://blockchain-project3-kelompok7-afq5q9vnd-naomigwy.vercel.app](https://blockchain-project3-kelompok7-afq5q9vnd-naomigwy.vercel.app)**
+**[https://blockchain-project3-kelompok7-afq5q9vnd-naomigwy.vercel.app](https://blockchain-project3-kelompok7-afq5q9vnd-naomigwy.vercel.app)**
 
 > **Catatan:** Tampilan frontend tersedia secara online. Untuk interaksi blockchain penuh, jalankan aplikasi secara lokal menggunakan panduan di atas.
 
