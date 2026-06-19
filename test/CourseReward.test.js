@@ -205,6 +205,22 @@ describe("CourseReward", function () {
 
     });
 
+    it("tracks claimers count", async function () {
+
+    await contract.grantReward(
+        student1.address,
+        REWARD
+    );
+
+    await contract
+        .connect(student1)
+        .claimReward();
+
+    expect(
+        await contract.getClaimersCount()
+    ).to.equal(1);
+});
+
     // ==================================================
     // PAUSE CONTRACT
     // ==================================================
@@ -236,7 +252,7 @@ describe("CourseReward", function () {
     // DEADLINE
     // ==================================================
 
-describe("Deadline", function () {
+    describe("Deadline", function () {
 
     it("owner can update deadline", async function () {
 

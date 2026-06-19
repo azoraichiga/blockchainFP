@@ -28,32 +28,33 @@ export const formatDeadline = (epochSeconds) => {
 // CourseReward.sol milik anggota Smart Contract — bukan tebakan generik.
 export function friendlyError(error) {
   const msg = (error?.reason || error?.message || "").toLowerCase();
+  const errStr = typeof error === 'object' ? JSON.stringify(error, Object.getOwnPropertyNames(error)).toLowerCase() : String(error).toLowerCase();
 
-  if (error?.code === 4001 || msg.includes("user rejected")) {
-    return "Transaksi ditolak di MetaMask. Coba lagi.";
+  if (errStr.includes("4001") || errStr.includes("action_rejected") || errStr.includes("user rejected") || errStr.includes("user denied")) {
+    return "Transaksi dibatalkan. Kamu menolak permintaan di MetaMask.";
   }
-  if (msg.includes("insufficient funds")) {
+  if (errStr.includes("insufficient funds")) {
     return "Saldo ETH kamu tidak cukup untuk membayar gas.";
   }
-  if (msg.includes("insufficient contract balance")) {
+  if (errStr.includes("insufficient contract balance")) {
     return "Saldo kontrak belum cukup untuk membayar reward. Hubungi dosen untuk top-up.";
   }
-  if (msg.includes("reward already claimed") || msg.includes("already claimed")) {
+  if (errStr.includes("reward already claimed") || errStr.includes("already claimed")) {
     return "Reward sudah pernah diklaim.";
   }
-  if (msg.includes("claim deadline has passed")) {
+  if (errStr.includes("claim deadline has passed")) {
     return "Batas waktu klaim sudah lewat.";
   }
-  if (msg.includes("not whitelisted")) {
+  if (errStr.includes("not whitelisted")) {
     return "Alamat kamu belum terdaftar untuk menerima reward. Hubungi dosen.";
   }
-  if (msg.includes("contract is not active")) {
+  if (errStr.includes("contract is not active")) {
     return "Program reward sedang dinonaktifkan oleh dosen.";
   }
-  if (msg.includes("invalid student address")) {
+  if (errStr.includes("invalid student address")) {
     return "Alamat mahasiswa tidak valid.";
   }
-  if (msg.includes("amount must be greater than 0")) {
+  if (errStr.includes("amount must be greater than 0")) {
     return "Jumlah reward harus lebih dari 0.";
   }
   return "Terjadi kesalahan. Periksa koneksi dan coba lagi.";
