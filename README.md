@@ -97,6 +97,8 @@ http://localhost:5173
 
 ## Screenshot
 
+**0. Tampilan Awal (Wallet Belum Terhubung)**
+![Wallet Disconnected](img/0-wallet-disconnected.png)
 **1. Tampilan Awal Panel Dosen (Admin)**
 ![Panel Dosen](img/1-admin-panel.png)
 
