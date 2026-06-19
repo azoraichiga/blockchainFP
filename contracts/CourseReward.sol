@@ -151,6 +151,14 @@ contract CourseReward {
         return address(this).balance;
     }
 
+    function getClaimersCount()
+    external
+    view
+    returns (uint256)
+{
+    return claimers.length;
+}
+
     function getAllClaimers()
         external
         view
