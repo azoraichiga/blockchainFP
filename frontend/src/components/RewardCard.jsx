@@ -1,4 +1,4 @@
-import { formatCRT } from "../utils/helpers";
+import { formatETH, formatDeadline } from "../utils/helpers";
 
 function StatCard({ label, value, sub, valueClass = "" }) {
   return (
@@ -19,7 +19,14 @@ function Skeleton() {
   );
 }
 
-export default function RewardCard({ loading, rewardAmount, claimed }) {
+export default function RewardCard({
+  loading,
+  rewardAmount,
+  hasClaimed,
+  isWhitelisted,
+  isActive,
+  claimDeadline,
+}) {
   if (loading) {
     return (
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -28,17 +35,42 @@ export default function RewardCard({ loading, rewardAmount, claimed }) {
       </div>
     );
   }
+
+  // Mahasiswa yang belum pernah di-grant reward sama sekali (belum
+  // whitelisted) tidak punya apa-apa untuk ditampilkan sebagai reward —
+  // ini kondisi nyata di kontrak (whitelist[student] baru true setelah
+  // dosen memanggil grantReward).
+  if (!isWhitelisted) {
+    return (
+      <div className="rounded-lg border border-slate-200 bg-white p-4">
+        <p className="text-sm text-slate-500">
+          Belum ada reward untuk alamat ini. Reward akan muncul setelah dosen memberikannya.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
       {/* READ #1 */}
-      <StatCard label="Reward amount" value={formatCRT(rewardAmount)} sub="Course Reward Token" />
+      <StatCard label="Reward amount" value={formatETH(rewardAmount)} sub="Ditransfer saat klaim" />
       {/* READ #2 */}
       <StatCard
         label="Status klaim"
-        value={claimed ? "Sudah diklaim" : "Belum diklaim"}
+        value={hasClaimed ? "Sudah diklaim" : "Belum diklaim"}
         sub="Dibaca dari smart contract"
-        valueClass={claimed ? "text-emerald-600" : "text-amber-600"}
+        valueClass={hasClaimed ? "text-emerald-600" : "text-amber-600"}
       />
+      {!isActive && (
+        <div className="sm:col-span-2 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-700">
+          Program reward sedang dinonaktifkan oleh dosen.
+        </div>
+      )}
+      {isActive && claimDeadline > 0 && (
+        <div className="sm:col-span-2 text-xs text-slate-400">
+          Batas waktu klaim: {formatDeadline(claimDeadline)}
+        </div>
+      )}
     </div>
   );
 }

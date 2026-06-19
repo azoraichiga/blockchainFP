@@ -8,10 +8,14 @@ import Toast from "./components/Toast";
 
 export default function App() {
   const {
-    account, isAdmin, rewardAmount, claimed, wrongNetwork, history,
-    loadingRead, txStatus, grantStatus, error, toasts,
-    connect, claim, grantReward, dismissToast,
+    account, isAdmin, wrongNetwork,
+    rewardAmount, hasClaimed, isWhitelisted, isActive, claimDeadline, contractBalance,
+    history,
+    loadingRead, txStatus, grantStatus, fundStatus, error, toasts,
+    connect, claim, grantReward, fundContract, dismissToast,
   } = useContract();
+
+  const deadlinePassed = claimDeadline > 0 && Date.now() / 1000 > claimDeadline;
 
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8">
@@ -47,11 +51,34 @@ export default function App() {
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            <RewardCard loading={loadingRead} rewardAmount={rewardAmount} claimed={claimed} />
+            <RewardCard
+              loading={loadingRead}
+              rewardAmount={rewardAmount}
+              hasClaimed={hasClaimed}
+              isWhitelisted={isWhitelisted}
+              isActive={isActive}
+              claimDeadline={claimDeadline}
+            />
             {!loadingRead && (
               <>
-                <ClaimAction claimed={claimed} txStatus={txStatus} error={error} onClaim={claim} />
-                {isAdmin && <AdminPanel grantStatus={grantStatus} onGrant={grantReward} />}
+                <ClaimAction
+                  hasClaimed={hasClaimed}
+                  isWhitelisted={isWhitelisted}
+                  isActive={isActive}
+                  deadlinePassed={deadlinePassed}
+                  txStatus={txStatus}
+                  error={error}
+                  onClaim={claim}
+                />
+                {isAdmin && (
+                  <AdminPanel
+                    grantStatus={grantStatus}
+                    fundStatus={fundStatus}
+                    contractBalance={contractBalance}
+                    onGrant={grantReward}
+                    onFund={fundContract}
+                  />
+                )}
                 <RewardHistory history={history} />
               </>
             )}
